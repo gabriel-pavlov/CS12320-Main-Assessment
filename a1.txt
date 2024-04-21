@@ -1,0 +1,9 @@
+b1
+c1	1+1 = 	SINGLE_CHOICE	1	false	2	false	3	false	
+END
+b2
+c1	time is now _____	FILL_BLANKS	6pm	
+END
+b3
+c1	Wind speed is	SINGLE_CHOICE	20mph	true	120mph	false	
+END

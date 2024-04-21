@@ -35,7 +35,7 @@ public class ModuleFileStorageWrapper implements Module {
     @Override
     public Optional<QuestionBank> getQuestionBank(final String qbId) {
         final Optional<QuestionBank> qWrapped = wrapped.getQuestionBank(qbId);
-        if (qWrapped.isPresent()){
+        if (qWrapped.isPresent()) {
             return Optional.of(wrapped(qWrapped.get()));
         }
         return qWrapped;
@@ -52,7 +52,7 @@ public class ModuleFileStorageWrapper implements Module {
     public Optional<QuestionBank> deleteQuestionBank(final String qbID) {
         final Optional<QuestionBank> qb = wrapped.deleteQuestionBank(qbID);
         save();
-        if (qb.isPresent()){
+        if (qb.isPresent()) {
             return Optional.of(wrapped(qb.get()));
         }
         return qb;
@@ -71,8 +71,61 @@ public class ModuleFileStorageWrapper implements Module {
         // load from text file
         // load wrapped version into questionBanks
         System.out.println("===LOAD===");
-        final File file = new File(data.getModID()+ ".txt");
+        final File file = new File(data.getModID() + ".txt");
         try (Scanner fileRead = new Scanner(file)) {
+            QuestionBank qb = null;
+            while (fileRead.hasNextLine()) {
+                final String line = fileRead.nextLine();
+                if ("END".equals(line)) {
+                    qb = null;
+                } else if (qb == null) {
+                    qb = data.createQuestionBank(line);
+                } else {
+                    // adding question to QB
+                    final String[] tokens = line.split("\t");
+                    final String qID = tokens[0];
+                    final String text = tokens[1];
+                    final Question.Type type = Question.Type.valueOf(tokens[2]);
+                    final Question q = qb.addQuestion(qID, text, type);
+
+                    switch (type) {
+                        case Question.Type.SINGLE_CHOICE:
+                            for (int i = 3; i < tokens.length-1; i+=2) {
+                                final String option = tokens[i];
+                                final boolean isCorrect = Boolean.getBoolean(tokens[i+1]);
+                                final Map<String, Object> args = new HashMap<>();
+                                args.put("option", option);
+                                args.put("isCorrect", isCorrect);
+                                ((AnswerableQuestion<Option>)q).addAnswer(args);
+                            }
+                            break;
+                        case Question.Type.FILL_BLANKS:
+                            for (int i = 3; i < tokens.length; i++) {
+                                final String blank = tokens[i];
+                                final Map<String, Object> args = new HashMap<>();
+                                args.put("blank", blank);
+                                ((AnswerableQuestion<Blank>)q).addAnswer(args);
+                            }
+                            break;
+                    }
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+            }
+
+
+
+
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -85,13 +138,13 @@ public class ModuleFileStorageWrapper implements Module {
         // load from text file
         // 00001.txt <- txt file name is mod ID
         // o1 <- question bank ID
-        // A,1+2 =,SINGLE_ANSWER,"2",true,"1",false <- question ID, text, type, and repeating option to max of 10
-        // B,"time now is ____",FILL_BLANKS,"6pm" <- question ID, text, type and repeating blanks up to max of 10
+        // A,1+2 =,SINGLE_ANSWER,"2",true,"1",false <- question ID, text, type, number of option (10 max) and repeated options
+        // B,"time now is ____",FILL_BLANKS,"6pm" <- question ID, text, number of Blanks (10 max) and repeated blanks
         // END <- end question bank
         // o2 <- start of new qb
         // ... <- repeat
         System.out.println("===SAVE===");
-        final File file = new File(data.getModID()+ ".txt");
+        final File file = new File(data.getModID() + ".txt");
         try (PrintWriter writer = new PrintWriter(file)) {
             data.getQuestionBanks().stream().forEach(questionBank -> {
                 writer.println(questionBank.getBankID());
@@ -102,6 +155,7 @@ public class ModuleFileStorageWrapper implements Module {
                     writer.print("\t");
                     writer.print(question.getType());
                     writer.print("\t");
+
 
                     switch (question.getType()) {
                         case SINGLE_CHOICE:
