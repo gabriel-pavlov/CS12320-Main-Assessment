@@ -1,14 +1,13 @@
 package gpavlov.cs12320.mainassignment.persistence;
 
-import gpavlov.cs12320.mainassignment.domain.AnswerableQuestion;
+import gpavlov.cs12320.mainassignment.domain.*;
 import gpavlov.cs12320.mainassignment.domain.Module;
-import gpavlov.cs12320.mainassignment.domain.QuestionBank;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.io.PrintWriter;
+import java.util.*;
 
 public class ModuleFileStorageWrapper implements Module {
 
@@ -72,6 +71,13 @@ public class ModuleFileStorageWrapper implements Module {
         // load from text file
         // load wrapped version into questionBanks
         System.out.println("===LOAD===");
+        final File file = new File(data.getModID()+ ".txt");
+        try (Scanner fileRead = new Scanner(file)) {
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     void save() {
@@ -79,11 +85,50 @@ public class ModuleFileStorageWrapper implements Module {
         // load from text file
         // 00001.txt <- txt file name is mod ID
         // o1 <- question bank ID
-        // A,"1+2 =",SINGLE_ANSWER,"2",true,"1",false <- question ID, text, type, and repeating option to max of 10
+        // A,1+2 =,SINGLE_ANSWER,"2",true,"1",false <- question ID, text, type, and repeating option to max of 10
         // B,"time now is ____",FILL_BLANKS,"6pm" <- question ID, text, type and repeating blanks up to max of 10
         // END <- end question bank
         // o2 <- start of new qb
         // ... <- repeat
         System.out.println("===SAVE===");
+        final File file = new File(data.getModID()+ ".txt");
+        try (PrintWriter writer = new PrintWriter(file)) {
+            data.getQuestionBanks().stream().forEach(questionBank -> {
+                writer.println(questionBank.getBankID());
+                questionBank.getQuestions().stream().forEach(question -> {
+                    writer.print(question.getQuestionID());
+                    writer.print("\t");
+                    writer.print(question.getQuestionText());
+                    writer.print("\t");
+                    writer.print(question.getType());
+                    writer.print("\t");
+
+                    switch (question.getType()) {
+                        case SINGLE_CHOICE:
+                            ((AnswerableQuestion<Option>) question).getAnswers().stream().forEach(option -> {
+                                writer.print(option.getAnswer());
+                                writer.print("\t");
+                                writer.print(option.isCorrect());
+                                writer.print("\t");
+                            });
+                            break;
+                        case FILL_BLANKS:
+                            ((AnswerableQuestion<Blank>) question).getAnswers().stream().forEach(blank -> {
+                                writer.print(blank.getAnswer());
+                                writer.print("\t");
+                            });
+                            break;
+                    }
+
+                    writer.println();
+
+
+                });
+                writer.println("END");
+            });
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
