@@ -2,6 +2,7 @@ package gpavlov.cs12320.mainassignment;
 
 import gpavlov.cs12320.mainassignment.domain.*;
 import gpavlov.cs12320.mainassignment.domain.Module;
+import gpavlov.cs12320.mainassignment.persistence.ModuleFileStorageWrapper;
 import gpavlov.cs12320.mainassignment.ui.Menu;
 import gpavlov.cs12320.mainassignment.ui.TeacherMenu;
 
@@ -48,7 +49,7 @@ public class Application {
         c1.addAnswer(c1a3);
 
 
-        modules.add(a1);
+        modules.add(new ModuleFileStorageWrapper(a1));
         // rest of modules added
 
         final Menu tm = new TeacherMenu(modules);
