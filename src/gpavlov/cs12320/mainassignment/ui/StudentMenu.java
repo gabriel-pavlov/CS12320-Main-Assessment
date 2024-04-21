@@ -1,10 +1,17 @@
 package gpavlov.cs12320.mainassignment.ui;
 
 import gpavlov.cs12320.mainassignment.domain.Module;
+
+import java.io.PrintStream;
+import java.util.List;
 import java.util.Scanner;
 
-public class StudentMenu extends Menu{
+public class StudentMenu extends Menu {
 
+
+    public StudentMenu(final List<Module> modules) {
+        super(modules);
+    }
 
     public void printMenu() {
         System.out.println("Welcome to the student quiz taker program");
@@ -36,4 +43,8 @@ public class StudentMenu extends Menu{
 
     }
 
+    @Override
+    public void printMenu(final PrintStream printer, final Scanner reader) {
+
+    }
 }

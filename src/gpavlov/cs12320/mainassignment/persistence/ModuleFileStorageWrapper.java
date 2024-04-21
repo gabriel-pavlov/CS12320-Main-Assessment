@@ -35,11 +35,6 @@ public class ModuleFileStorageWrapper implements Module {
     }
 
     @Override
-    public void listQuestionBank(final PrintStream os) {
-        wrapped.listQuestionBank(os);
-    }
-
-    @Override
     public QuestionBank createQuestionBank(final String qbID) {
         final QuestionBank qb = wrapped.createQuestionBank(qbID);
         save();
