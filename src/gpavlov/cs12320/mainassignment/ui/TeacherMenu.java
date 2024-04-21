@@ -1,13 +1,10 @@
 package gpavlov.cs12320.mainassignment.ui;
 
+import gpavlov.cs12320.mainassignment.domain.*;
 import gpavlov.cs12320.mainassignment.domain.Module;
-import gpavlov.cs12320.mainassignment.domain.ModulePOJO;
-import gpavlov.cs12320.mainassignment.domain.QuestionBank;
 
 import java.io.PrintStream;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 import static jdk.dynalink.StandardNamespace.findFirst;
 
@@ -19,36 +16,103 @@ public class TeacherMenu extends Menu {
     }
 
     public void printMenu(PrintStream printer, Scanner reader) {
-        listModules(printer);
-        final Module workMod = selectModByID(printer, reader);
-
+        Module workMod = null;
+        QuestionBank workBank = null;
+        String choice = "1";
 
         while (true) {
-            listQuestionBanks(printer, workMod);
-            printer.println("Please select from following options");
-            printer.println("1) create a question bank");
-            printer.println("2) edit existing question bank");
 
-            final String choice = reader.nextLine();
             switch (choice) {
                 case "1":
-                    createQBWithMenu(printer, reader, workMod);
+                    listModules(printer);
+                    workMod = selectModByID(printer, reader);
+                    listQuestionBanks(printer, workMod);
                     break;
+                case "2":
+                    createQBWithMenu(printer, reader, workMod);
+                    listQuestionBanks(printer, workMod);
+                    break;
+                case "3":
+                    deleteQBWithMenu(printer, reader, workMod);
+                    listQuestionBanks(printer, workMod);
+                    break;
+                case "4":
+                    workBank = selectQuestionBankByID(printer, reader, workMod);
+                    listQuestions(printer, workBank);
+                    break;
+                case "41":
+                    createQuestionWithMenu(printer, reader, workBank);
+                    listQuestions(printer, workBank);
+                    break;
+                case "42":
+                    deleteQuestionWithMenu(printer, reader, workBank);
+                    listQuestions(printer, workBank);
+                    break;
+                case "43":
+                    workBank = null;
+                    listQuestionBanks(printer, workMod);
 
+                    break;
+                case "5":
+                    endProgram(printer);
+                    return;
             }
+            if (workBank == null) {
+                printer.println("Please select from following options");
+                printer.println("1) change module");
+                printer.println("2) create new question bank");
+                printer.println("3) delete existing question bank");
+                printer.println("4) edit existing question bank");
+                printer.println("5) quit program");
+            } else {
+                printer.println("Please select an option from following:");
+                printer.println("41) add question");
+                printer.println("42) delete question");
+                printer.println("43) exit to main menu");
+            }
+            choice = reader.nextLine();
 
         }
 
     }
 
+    private QuestionBank selectQuestionBankByID(final PrintStream printer, final Scanner reader, final Module workMod) {
+        QuestionBank qb;
+        while (true) {
+            printer.println("Please enter ID of question bank");
+            final String searchID = reader.nextLine();
+            final Optional<QuestionBank> optionalQB = workMod.getQuestionBank(searchID);
+            if (optionalQB.isEmpty()) {
+                printer.println("error, incorrect question bank ID selected");
+            } else {
+                qb = optionalQB.get();
+                printer.println("Selected question bank is " + qb.getUniqueID());
+                return qb;
+
+            }
+
+        }
+    }
+
+    private void deleteQBWithMenu(final PrintStream printer, final Scanner reader, final Module workMod) {
+        printer.println("Please enter ID of question bank to be deleted");
+        final String deletionID = reader.nextLine();
+        try {
+            workMod.deleteQuestionBank(deletionID);
+        } catch (IllegalArgumentException incorrectID) {
+            printer.println("Error: " + incorrectID.getMessage());
+        }
+    }
+
     private void createQBWithMenu(final PrintStream printer, final Scanner reader, final Module workMod) {
-        printer.println("Please enter ID of question bank");
+        printer.println("Please enter ID of question bank to be created");
         final String newID = reader.nextLine();
         try {
             workMod.createQuestionBank(newID);
         } catch (IllegalArgumentException alreadyUsedID) {
             printer.println("Error " + alreadyUsedID.getMessage());
         }
+
     }
 
     private Module selectModByID(final PrintStream printer, final Scanner reader) {
@@ -89,28 +153,141 @@ public class TeacherMenu extends Menu {
 
     }
 
-    private void launchEditor(PrintStream printer, Scanner reader, Module module) {
+    private void deleteQuestionWithMenu(final PrintStream printer, final Scanner reader, final QuestionBank workBank) {
+        printer.println("Please enter index of question to be deleted");
+        final String deletionIndex = reader.nextLine();
+        try {
+            final int index = Integer.parseInt(deletionIndex) - 1;
+            workBank.removeQuestion(index);
+        } catch (NumberFormatException nfe) {
+            printer.println("Error: Please provide numeric index");
+        } catch (IllegalArgumentException incorrectID) {
+            printer.println("Error: " + incorrectID.getMessage());
+        }
 
-        printer.println("Please select an option from following:");
-        printer.println("1) create new question bank for module" + module.getModID());
-        printer.println("2) new question bank for existing question bank in " + module.getModID());
-        printer.println("3) delete question bank for question bank" + module.getModID());
+    }
 
-        int choice = reader.nextInt();
-        reader.nextLine();
-        switch (choice) {
-            case 1:
-                //mod.createqb
-                break;
-            case 2:
-                printer.println("Please enter the QBID of the question bank you wish to add a question to");
+    private void createQuestionWithMenu(final PrintStream printer, final Scanner reader, final QuestionBank workBank) {
+
+        printer.println("Please enter the question ID");
+        final String id = reader.nextLine();
+
+
+        printer.println("Please enter the question please select from following types:");
+        printer.println("1) single answer question");
+        printer.println("2) fill in the blanks question");
+        final String type = reader.nextLine();
+
+        if ("1".equals(type)) {
+            printer.println("Please enter single answer question text");
+        } else {
+            printer.println("Please enter blanks question text, including underscores where blanks should be");
+        }
+
+        final String text = reader.nextLine();
+
+        try {
+            final Question q = workBank.addQuestion(id, text, "1".equals(type) ? Question.Type.SINGLE_CHOICE : Question.Type.FILL_BLANKS);
+            switch (q.getType()) {
+                case SINGLE_CHOICE:
+                    createOptions(printer, reader, (AnswerableQuestion<Option>) q);
+                    break;
+                case FILL_BLANKS:
+                    createBlanks(printer, reader, (AnswerableQuestion<Blank>) q);
+                default:
+            }
+        } catch (IllegalArgumentException alreadyUsedID) {
+            printer.println("Error " + alreadyUsedID.getMessage());
         }
 
 
     }
 
-    private void endProgram(PrintStream printer, Module module) {
+    private void createOptions(final PrintStream printer, final Scanner reader, final AnswerableQuestion<Option> answer) {
+        printer.println("Please enter how many answers you would like to have (1-10)");
+        int numberOfAnswers = 0;
+        while (true) {
+            try {
+                String amount = reader.nextLine();
+                numberOfAnswers = Integer.parseInt(amount);
+                if (numberOfAnswers > 0 && numberOfAnswers < 11) {
+                    for (int i = 0; i < numberOfAnswers; i++) {
+                        printer.println("Please enter answer contents");
+                        final String content = reader.nextLine();
+                        printer.println("is this correct answer? (Y/N)");
+                        final boolean isCorrect = "Y".equalsIgnoreCase(reader.nextLine());
+                        final Map<String, Object> c1a3 = new HashMap<>();
+                        c1a3.put("option", content);
+                        c1a3.put("isCorrect", isCorrect);
+                        answer.addAnswer(c1a3);
+                    }
+                    break;
+                }
+            } catch (Exception e) {
+                // invalid input
+            }
+            printer.println("Error: please enter valid number");
 
+        }
+    }
+
+    private void createBlanks(final PrintStream printer, final Scanner reader, final AnswerableQuestion<Blank> answer) {
+        printer.println("Please enter how many blanks you would like to have (1-10)");
+        int numberOfAnswers = 0;
+        while (true) {
+            try {
+                String amount = reader.nextLine();
+                numberOfAnswers = Integer.parseInt(amount);
+                if (numberOfAnswers > 0 && numberOfAnswers < 11) {
+                    for (int i = 0; i < numberOfAnswers; i++) {
+                        printer.println("Please enter answer contents");
+                        final String content = reader.nextLine();
+                        final Map<String, Object> c1a3 = new HashMap<>();
+                        c1a3.put("blank", content);
+                        answer.addAnswer(c1a3);
+                    }
+                    break;
+                }
+            } catch (Exception e) {
+                // invalid input
+            }
+            printer.println("Error: please enter valid number");
+
+        }
+    }
+
+    private void launchEditor(PrintStream printer, Scanner reader, Module module) {
+        QuestionBank qb;
+        while (true) {
+            printer.println("Please enter ID of question bank");
+            final String searchID = reader.nextLine();
+            final Optional<QuestionBank> optionalQB = module.getQuestionBank(searchID);
+            if (optionalQB.isEmpty()) {
+                printer.println("error, incorrect question bank ID selected");
+            } else {
+                qb = optionalQB.get();
+                printer.println("Selected question bank is " + qb.getUniqueID());
+                break;
+
+            }
+
+        }
+
+
+    }
+
+    private void listQuestions(final PrintStream printer, final QuestionBank qb) {
+        printer.println("The loaded questions are as follows:");
+        int i = 0;
+        for (Question question : qb.getQuestions()) {
+            i++;
+            printer.print(i + " ");
+            printer.println(question.getQuestionID() + " [" + question.getType() + "]: " + question.getQuestionText());
+        }
+    }
+
+    private void endProgram(PrintStream printer) {
+        printer.println("Thank you for using the question bank program");
     }
 
 }

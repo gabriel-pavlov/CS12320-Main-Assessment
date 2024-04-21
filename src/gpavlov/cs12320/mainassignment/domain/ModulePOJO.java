@@ -61,11 +61,14 @@ public class ModulePOJO implements Module {
     public Optional<QuestionBank> deleteQuestionBank(final String qbID) {
 
         final Optional<QuestionBank> qb = getQuestionBank(qbID);
-        if (qb.isPresent() && !qb.get().hasQuestions()) {
+        if (qb.isPresent()) {
+            if (qb.get().hasQuestions()) {
+                throw new IllegalArgumentException("Cannot delete bank which contains questions = " + qbID);
+            }
             this.questionBanks.remove(qb.get());
+            return qb;
         }
 
-//        throw new IllegalArgumentException("Not found qbID = " + qbID);
         return qb;
 
     }
