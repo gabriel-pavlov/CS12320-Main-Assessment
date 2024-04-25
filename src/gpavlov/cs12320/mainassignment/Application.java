@@ -27,7 +27,7 @@ public class Application {
 //        } catch (IllegalArgumentException iae) {
 //            System.out.println("Error: " + iae.getMessage());
 //        }
-        // TODO make teacher part work in memory
+
 
         final List<Module> modules = new ArrayList<>();
 
@@ -69,7 +69,14 @@ public class Application {
 //        }
 
         tm.printMenu(System.out, new Scanner(System.in));
+        Quiz quiz = modules.get(0).getQuestionBanks().get(0).createQuiz(2);
+        System.out.println(quiz.getQuestions().size());
+        quiz.captureAnswer(0, q -> {
+            System.out.println(q.getQuestionText());
 
+            return new Scanner(System.in).nextLine();
+        });
+        System.out.println("Your result is" + quiz.validate());
     }
 
 }

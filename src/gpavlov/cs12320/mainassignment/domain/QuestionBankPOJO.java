@@ -1,9 +1,6 @@
 package gpavlov.cs12320.mainassignment.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class QuestionBankPOJO implements QuestionBank {
 
@@ -41,13 +38,18 @@ public class QuestionBankPOJO implements QuestionBank {
     }
 
     @Override
-    public Quiz createQuiz(final int numberOfQuestions) {
-        return null;
-        //TODO create quiz (randomiser and question amount)
+    public QuizPOJO createQuiz(final int numberOfQuestions) {
+        final List<AnswerableQuestion> quizList = new ArrayList<>((List) questions);
+        final Random random = new Random();
+        while (numberOfQuestions < quizList.size()) {
+            quizList.remove(random.nextInt(quizList.size()));
+        }
+        Collections.shuffle(quizList);
+        return new QuizPOJO(quizList);
+
     }
 
     public Question addQuestion(final String id, final String questionText, final Question.Type type) {
-
 
         final Optional<Question> q = getQuestion(id);
         if (q.isPresent()) {
@@ -58,10 +60,10 @@ public class QuestionBankPOJO implements QuestionBank {
         final Question question;
 
         switch (type) {
-            case SINGLE_CHOICE :
+            case SINGLE_CHOICE:
                 question = new SingleAnswerPOJO(id, questionText);
                 break;
-            case FILL_BLANKS :
+            case FILL_BLANKS:
             default:
                 question = new FillBlanksPOJO(id, questionText);
                 break;

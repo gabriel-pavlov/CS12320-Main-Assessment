@@ -3,7 +3,7 @@ package gpavlov.cs12320.mainassignment.persistence;
 import gpavlov.cs12320.mainassignment.domain.AnswerableQuestion;
 import gpavlov.cs12320.mainassignment.domain.Question;
 import gpavlov.cs12320.mainassignment.domain.QuestionBank;
-import gpavlov.cs12320.mainassignment.domain.Quiz;
+import gpavlov.cs12320.mainassignment.domain.QuizPOJO;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +55,7 @@ public class QuestionBankFileStorageWrapper implements QuestionBank {
     }
 
     @Override
-    public Quiz createQuiz(final int numberOfQuestions) {
+    public QuizPOJO createQuiz(final int numberOfQuestions) {
         return wrapped.createQuiz(numberOfQuestions);
     }
 

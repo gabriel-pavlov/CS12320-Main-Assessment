@@ -1,31 +1,15 @@
 package gpavlov.cs12320.mainassignment.domain;
 
-public class Quiz {
+import java.util.List;
 
-    private final int selectedQuestion;
-    private final int quizLength;
+public interface Quiz {
 
-    public Quiz(final int selectedQuestion, final int quizLength) {
-        this.selectedQuestion = selectedQuestion;
-        this.quizLength = quizLength;
-    }
+    List<AnswerableQuestion> getQuestions();
 
-    public int getSelectedQuestion() {
-        return selectedQuestion;
-    }
+    int getUnansweredQuestionCount();
 
-    public int getQuizLength() {
-        return quizLength;
-    }
+    float validate();
 
-    public final int validateQuiz() {
-
-
-        return 0;
-    }
-
-    public void generateQuiz() {
-
-    }
+    void captureAnswer(int index ,AnswerCapturer answer);
 
 }

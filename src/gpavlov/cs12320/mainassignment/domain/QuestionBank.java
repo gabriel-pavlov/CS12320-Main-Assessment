@@ -15,7 +15,7 @@ public interface QuestionBank {
 
     Optional<Question> getQuestion(String id);
 
-    Quiz createQuiz(int numberOfQuestions);
+    QuizPOJO createQuiz(int numberOfQuestions);
 
     Question addQuestion(String id, String questionText, Question.Type type);
 

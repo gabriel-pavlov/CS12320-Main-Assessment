@@ -1,20 +1,13 @@
 package gpavlov.cs12320.mainassignment.domain;
 
-public class SelectedQuestion {
+public interface SelectedQuestion<E> {
 
-    private final String questionID;
-    private final String studans;
+    AnswerableQuestion<E> getQuestion();
 
-    public SelectedQuestion(final String questionID, final String studans) {
-        this.questionID = questionID;
-        this.studans = studans;
-    }
+    boolean validate();
 
-    public String getQuestionID() {
-        return questionID;
-    }
+    boolean isAnswered();
 
-    public String getStudans() {
-        return studans;
-    }
+    void captureAnswer(AnswerCapturer answer);
+
 }

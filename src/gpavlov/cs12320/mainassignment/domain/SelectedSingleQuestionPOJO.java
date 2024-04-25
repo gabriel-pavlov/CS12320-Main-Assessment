@@ -1,0 +1,24 @@
+package gpavlov.cs12320.mainassignment.domain;
+
+public class SelectedSingleQuestionPOJO extends SelectedQuestionPOJO<Option> {
+
+
+    private int answerIndex = 0;
+
+    public SelectedSingleQuestionPOJO(final AnswerableQuestion<Option> question) {
+        super(question);
+    }
+
+    @Override
+    public boolean validate() {
+        final Option answerOption = getQuestion().getAnswers().get(answerIndex);
+        return getQuestion().validate(answerOption.getAnswer());
+    }
+
+    @Override
+    public void captureAnswer(final AnswerCapturer answer) {
+        final String ans = answer.capture(getQuestion());
+        answerIndex = Integer.parseInt(ans);
+        answered = true;
+    }
+}
