@@ -10,14 +10,17 @@ public class SelectedBlankQuestionPOJO extends SelectedQuestionPOJO<Blank> {
 
     @Override
     public boolean validate() {
-        return getQuestion().validate(answers);
+        if (answered) {
+            return getQuestion().validate(answers);
+        }
+        return false;
     }
 
     @Override
     public void captureAnswer(final AnswerCapturer answer) {
         final String[] ans = new String[getQuestion().getAnswers().size()];
         for (int i = 0; i < getQuestion().getAnswers().size(); i++) {
-            ans[i] = answer.capture(getQuestion());
+            ans[i] = answer.capture(getQuestion(), i);
         }
         answers = ans;
         answered = true;

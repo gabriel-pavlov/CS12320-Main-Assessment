@@ -90,13 +90,13 @@ public class ModuleFileStorageWrapper implements Module {
 
                     switch (type) {
                         case Question.Type.SINGLE_CHOICE:
-                            for (int i = 3; i < tokens.length-1; i+=2) {
+                            for (int i = 3; i < tokens.length - 1; i += 2) {
                                 final String option = tokens[i];
-                                final boolean isCorrect = Boolean.getBoolean(tokens[i+1]);
+                                final boolean isCorrect = Boolean.parseBoolean(tokens[i + 1]);
                                 final Map<String, Object> args = new HashMap<>();
                                 args.put("option", option);
                                 args.put("isCorrect", isCorrect);
-                                ((AnswerableQuestion<Option>)q).addAnswer(args);
+                                ((AnswerableQuestion<Option>) q).addAnswer(args);
                             }
                             break;
                         case Question.Type.FILL_BLANKS:
@@ -104,27 +104,14 @@ public class ModuleFileStorageWrapper implements Module {
                                 final String blank = tokens[i];
                                 final Map<String, Object> args = new HashMap<>();
                                 args.put("blank", blank);
-                                ((AnswerableQuestion<Blank>)q).addAnswer(args);
+                                ((AnswerableQuestion<Blank>) q).addAnswer(args);
                             }
                             break;
                     }
                 }
 
 
-
-
-
-
-
-
-
-
-
-
             }
-
-
-
 
 
         } catch (FileNotFoundException e) {

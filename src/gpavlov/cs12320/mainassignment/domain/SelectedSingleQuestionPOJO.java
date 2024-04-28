@@ -11,14 +11,17 @@ public class SelectedSingleQuestionPOJO extends SelectedQuestionPOJO<Option> {
 
     @Override
     public boolean validate() {
-        final Option answerOption = getQuestion().getAnswers().get(answerIndex);
-        return getQuestion().validate(answerOption.getAnswer());
+        if (answered) {
+            final Option answerOption = getQuestion().getAnswers().get(answerIndex);
+            return getQuestion().validate(answerOption.getAnswer());
+        }
+        return false;
     }
 
     @Override
     public void captureAnswer(final AnswerCapturer answer) {
-        final String ans = answer.capture(getQuestion());
-        answerIndex = Integer.parseInt(ans);
+        final String ans = answer.capture(getQuestion(), 0);
+        answerIndex = Integer.parseInt(ans) - 1;
         answered = true;
     }
 }

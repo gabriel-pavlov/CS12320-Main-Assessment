@@ -7,8 +7,6 @@ public class SingleAnswerPOJO extends QuestionPOJO implements SingleAnswer {
     private final List<Option> answers = new ArrayList<>();
 
 
-
-
     public SingleAnswerPOJO(final String questionID, final String questionText) {
         super(questionID, questionText);
     }
@@ -23,17 +21,18 @@ public class SingleAnswerPOJO extends QuestionPOJO implements SingleAnswer {
     }
 
     @Override
-    public boolean validate(final String ... stuAnswer) {
+    public boolean validate(final String... stuAnswer) {
 
         for (int i = 0; i < stuAnswer.length; i++) {
             Option correctAnswer = answers.get(i);
-             if (stuAnswer[i].equals(correctAnswer.getAnswer())) {
-                 if (correctAnswer.isCorrect()) {
-                     return true;
-                 }
-             }
+            if (stuAnswer[i].equals(correctAnswer.getAnswer())) {
+                if (correctAnswer.isCorrect()) {
+                    System.out.println("DEBUG: " + getQuestionID() + ":" + getQuestionText() + ":" + Arrays.asList(stuAnswer) + ": CORRECT");
+                    return true;
+                }
+            }
         }
-
+        System.out.println("DEBUG: " + getQuestionID() + ":" + getQuestionText() + ":" + Arrays.asList(stuAnswer) + ": INCORRECT");
         return false;
     }
 

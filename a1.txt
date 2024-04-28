@@ -1,5 +1,10 @@
 b1
-c1	1+1 =	SINGLE_CHOICE	2	true	15	false	
+c1	1+1 =	SINGLE_CHOICE	2	true	1	false	
+c2	3*4 =	SINGLE_CHOICE	12	true	13	false	11	false	
+c4	1	FILL_BLANKS	1	
+c5	what is speed of sound ___	FILL_BLANKS	330	
+c6	My name is ____	FILL_BLANKS	Gaby	
+c3	7*6 =	SINGLE_CHOICE	47	false	42	true	
 END
 b2
 c1	time is now _____	FILL_BLANKS	6pm	

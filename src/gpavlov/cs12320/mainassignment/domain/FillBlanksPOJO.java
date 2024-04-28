@@ -25,21 +25,22 @@ public class FillBlanksPOJO extends QuestionPOJO implements FillBlanks {
      * For this function to return true all blanks must be correct
      *
      * @param stuAnswer answers provided by student for this question
-     *
      * @return true if answers are correct
      */
     @Override
-    public boolean validate(final String ... stuAnswer) {
+    public boolean validate(final String... stuAnswer) {
 
         for (int i = 0; i < stuAnswer.length; i++) {
             Blank correctAnswer = answers.get(i);
-            if (stuAnswer[i].equals(correctAnswer.getAnswer())) {
-                    return true;
+            if (!stuAnswer[i].equals(correctAnswer.getAnswer())) {
+                System.out.println("DEBUG: " + getQuestionID() + ":" + getQuestionText() + ":" + Arrays.asList(stuAnswer) + ": INCORRECT");
+                return false;
             }
 
         }
 
-        return false;
+        System.out.println("DEBUG: " + getQuestionID() + ":" + getQuestionText() + ":" + Arrays.asList(stuAnswer) + ": CORRECT");
+        return true;
     }
 
     @Override
