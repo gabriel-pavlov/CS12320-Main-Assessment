@@ -72,6 +72,9 @@ public class ModuleFileStorageWrapper implements Module {
         // load wrapped version into questionBanks
         System.out.println("===LOAD===");
         final File file = new File(data.getModID() + ".txt");
+        if (!file.exists()) {
+            return;
+        }
         try (Scanner fileRead = new Scanner(file)) {
             QuestionBank qb = null;
             while (fileRead.hasNextLine()) {
@@ -122,6 +125,7 @@ public class ModuleFileStorageWrapper implements Module {
 
     void save() {
         final Module data = getWrapped();
+
         // load from text file
         // 00001.txt <- txt file name is mod ID
         // o1 <- question bank ID
@@ -129,7 +133,8 @@ public class ModuleFileStorageWrapper implements Module {
         // B,"time now is ____",FILL_BLANKS,"6pm" <- question ID, text, number of Blanks (10 max) and repeated blanks
         // END <- end question bank
         // o2 <- start of new qb
-        // ... <- repeat
+        // ... <- repeat until end of file, which is end of module
+
         System.out.println("===SAVE===");
         final File file = new File(data.getModID() + ".txt");
         try (PrintWriter writer = new PrintWriter(file)) {

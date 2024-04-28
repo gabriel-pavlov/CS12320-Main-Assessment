@@ -34,14 +34,6 @@ public class ModulePOJO implements Module {
                 .filter(qb -> qb.getBankID().equals(qbId)).findFirst();
     }
 
-    public void listQuestionBank(PrintStream os) {
-
-        for(final QuestionBank qb : questionBanks) {
-            os.println(qb.getBankID());
-        }
-
-    }
-
     @Override
     public QuestionBank createQuestionBank(final String qbID) {
 
@@ -72,14 +64,5 @@ public class ModulePOJO implements Module {
         return qb;
 
     }
-
-//
-//    public void listQuestionBank(StringBuilder toAppendTo) {
-//
-//        for(final QuestionBank qb : questionBanks) {
-//            toAppendTo.append(qb.getBankID()).append('\n');
-//        }
-//
-//    }
 
 }

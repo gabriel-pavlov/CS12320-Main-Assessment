@@ -40,9 +40,7 @@ public class StudentMenu extends Menu {
                         //takeQuiz(printer, reader, workQuiz.get());
                         workQuiz = workQuizSelection.get();
                         start = Instant.now();
-
                     }
-
                     break;
                 case "21": // moves quiz backwards one question
                     if (questionIndex > 0) {
@@ -172,7 +170,6 @@ public class StudentMenu extends Menu {
 
     private Optional<Quiz> selectQuizByUniqueID(final PrintStream printer, final Scanner reader) {
 
-
         printer.println("Please enter unique ID of quiz to be taken");
         final String searchID = reader.nextLine();
         if (!searchID.contains(":")) {
@@ -204,50 +201,6 @@ public class StudentMenu extends Menu {
         }
 
         return Optional.empty();
-
-
-    }
-
-    public void takeQuiz(PrintStream printer, Scanner reader, Quiz selectedQuiz) {
-        final Instant start = Instant.now();
-
-        // TODO answer
-
-        //
-        final List<AnswerableQuestion> questions = selectedQuiz.getQuestions();
-        for (int i = 0; i < questions.size(); i++) {
-            final AnswerableQuestion question = questions.get(i);
-            printer.println(question.getQuestionID() + ": " + question.getQuestionText());
-            switch (question.getType()) {
-                case SINGLE_CHOICE:
-                    final List<Option> options = (List<Option>) question.getAnswers();
-
-                    for (int j = 0; j < options.size(); j++) {
-                        printer.println((j + 1) + ") " + options.get(j).getAnswer());
-                    }
-                    selectedQuiz.captureAnswer(i, (q, qi) -> {
-                        printer.println("select index of the option");
-                        return reader.nextLine();
-                    });
-                    break;
-                case FILL_BLANKS:
-                    selectedQuiz.captureAnswer(i, (q, qi) -> {
-                        printer.println("please enter answer for blank spot " + (qi + 1));
-                        return reader.nextLine();
-                    });
-                    break;
-            }
-        }
-
-        final Instant finish = Instant.now();
-        final float score = selectedQuiz.validate();
-        final long durationSeconds = (finish.getEpochSecond() - start.getEpochSecond());
-
-        printer.println("Your score is: " + score);
-        printer.println("Your time in seconds was: " + durationSeconds);
-        printer.println("Total questions: " + questions.size());
-        printer.println("Total questions left unanswered: " + selectedQuiz.getUnansweredQuestionCount());
-
 
     }
 
