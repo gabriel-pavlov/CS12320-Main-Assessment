@@ -3,7 +3,9 @@ package gpavlov.cs12320.mainassignment.domain;
 import java.util.Objects;
 
 public abstract class QuestionPOJO implements Question{
-
+    /**
+     * {@inheritDoc}
+     */
     private final String questionID;
     private final String questionText;
 

@@ -4,6 +4,10 @@ import java.util.*;
 
 public class SingleAnswerPOJO extends QuestionPOJO implements SingleAnswer {
 
+    /**
+     * {@inheritDoc}
+     */
+
     private final List<Option> answers = new ArrayList<>();
 
 

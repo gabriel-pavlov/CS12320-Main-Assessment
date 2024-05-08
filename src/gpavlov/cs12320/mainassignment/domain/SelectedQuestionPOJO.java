@@ -2,6 +2,10 @@ package gpavlov.cs12320.mainassignment.domain;
 
 public abstract class SelectedQuestionPOJO<E> implements SelectedQuestion<E> {
 
+    /**
+     * {@inheritDoc}
+     */
+
     private final AnswerableQuestion<E> question;
 
     protected boolean answered = false;

@@ -1,6 +1,14 @@
 package gpavlov.cs12320.mainassignment.domain;
 
+/**
+ * This is the fill in the blanks type of selected question
+ */
+
 public class SelectedBlankQuestionPOJO extends SelectedQuestionPOJO<Blank> {
+
+    /**
+     * {@inheritDoc}
+     */
 
     private String[] answers = new String[0];
 

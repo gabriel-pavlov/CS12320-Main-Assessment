@@ -11,4 +11,8 @@ c1	time is now _____	FILL_BLANKS	6pm
 END
 b3
 c1	Wind speed is	SINGLE_CHOICE	20mph	false	120mph	false	
+c2	text	SINGLE_CHOICE	1	false	2	false	N	false	Y	true	
+c3	text2	SINGLE_CHOICE	Y	true	N	true	
+c4	text	FILL_BLANKS	1	
+c5	tex3	SINGLE_CHOICE	Y	true	N	true	Y	true	N	false	
 END

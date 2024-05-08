@@ -4,6 +4,10 @@ import java.util.*;
 
 public class FillBlanksPOJO extends QuestionPOJO implements FillBlanks {
 
+    /**
+     * {@inheritDoc}
+     */
+
     private final List<Blank> answers = new ArrayList<>();
 
     public FillBlanksPOJO(final String questionID, final String questionText) {

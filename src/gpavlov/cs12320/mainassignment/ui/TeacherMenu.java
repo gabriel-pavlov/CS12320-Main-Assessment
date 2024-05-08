@@ -8,12 +8,21 @@ import java.util.*;
 
 import static jdk.dynalink.StandardNamespace.findFirst;
 
+/**
+ * the teacher menu is the main way students interact with the program
+ */
 public class TeacherMenu extends Menu {
 
 
     public TeacherMenu(final List<Module> modules) {
         super(modules);
     }
+
+    /**
+     * prints the menu and interaction options a teacher user has
+     * @param printer a printstream that is used for printing text to the user
+     * @param reader a scanner object that is used for reading user input
+     */
 
     public void printMenu(PrintStream printer, Scanner reader) {
         Module workMod = null;
@@ -76,6 +85,15 @@ public class TeacherMenu extends Menu {
 
     }
 
+    /**
+     * This is a method to select a specific question bank
+     *
+     * @param printer a printstream that is used for printing text to the user
+     * @param reader a scanner object that is used for reading user input
+     * @param workMod the currently selected Module
+     * @return the QuestionBank with relevant qbID
+     */
+
     private QuestionBank selectQuestionBankByID(final PrintStream printer, final Scanner reader, final Module workMod) {
         QuestionBank qb;
         while (true) {
@@ -94,6 +112,14 @@ public class TeacherMenu extends Menu {
         }
     }
 
+    /**
+     * this is a method that facilitates deletion of a specific QuestionBank
+     *
+     * @param printer a printstream that is used for printing text to the user
+     * @param reader a scanner object that is used for reading user input
+     * @param workMod the currently selected Module
+     */
+
     private void deleteQBWithMenu(final PrintStream printer, final Scanner reader, final Module workMod) {
         printer.println("Please enter ID of question bank to be deleted");
         final String deletionID = reader.nextLine();
@@ -104,16 +130,32 @@ public class TeacherMenu extends Menu {
         }
     }
 
+    /**
+     * this is a method that facilitates creation of a new QuestionBank
+     *
+     * @param printer a printstream that is used for printing text to the user
+     * @param reader a scanner object that is used for reading user input
+     * @param workMod the currently selected Module
+     */
+
     private void createQBWithMenu(final PrintStream printer, final Scanner reader, final Module workMod) {
         printer.println("Please enter ID of question bank to be created");
         final String newID = reader.nextLine();
-        try {
-            workMod.createQuestionBank(newID);
-        } catch (IllegalArgumentException alreadyUsedID) {
-            printer.println("Error " + alreadyUsedID.getMessage());
+        if (newID.length() > 15) {
+            printer.println("Error, qbID is longer than 15 " + newID);
+        } else {
+            try {
+                workMod.createQuestionBank(newID);
+            } catch (IllegalArgumentException alreadyUsedID) {
+                printer.println("Error " + alreadyUsedID.getMessage());
+            }
         }
-
     }
+
+    /**
+     * this method allows the user to select a module by its ID
+     * @return module to be viewed
+     */
 
     private Module selectModByID(final PrintStream printer, final Scanner reader) {
         while (true) {
@@ -131,6 +173,11 @@ public class TeacherMenu extends Menu {
 
     }
 
+    /**
+     * this method prints the list of modules currently loaded
+     *
+     */
+
     private void listModules(final PrintStream printer) {
         printer.println("The loaded modules are as follows:");
         int i = 0;
@@ -140,6 +187,11 @@ public class TeacherMenu extends Menu {
             printer.println(mod.getModID());
         }
     }
+
+    /**
+     * this method prints the list of question banks currently loaded
+     *
+     */
 
     private void listQuestionBanks(PrintStream printer, Module module) {
         printer.println("The loaded question banks are as follows:");
@@ -152,6 +204,14 @@ public class TeacherMenu extends Menu {
         }
 
     }
+
+    /**
+     * this is a method that allows the deletion of a specific Question by ID
+     *
+     * @param printer a printstream that is used for printing text to the user
+     * @param reader a scanner object that is used for reading user input
+     * @param workBank the currently selected QuestionBank
+     */
 
     private void deleteQuestionWithMenu(final PrintStream printer, final Scanner reader, final QuestionBank workBank) {
         printer.println("Please enter index of question to be deleted");
@@ -166,6 +226,14 @@ public class TeacherMenu extends Menu {
         }
 
     }
+
+    /**
+     * this is a method that allows the creation of a new Question
+     *
+     * @param printer a printstream that is used for printing text to the user
+     * @param reader a scanner object that is used for reading user input
+     * @param workBank the currently selected QuestionBank
+     */
 
     private void createQuestionWithMenu(final PrintStream printer, final Scanner reader, final QuestionBank workBank) {
 
@@ -188,13 +256,10 @@ public class TeacherMenu extends Menu {
 
         try {
             final Question q = workBank.addQuestion(id, text, "1".equals(type) ? Question.Type.SINGLE_CHOICE : Question.Type.FILL_BLANKS);
-            switch (q.getType()) {
-                case SINGLE_CHOICE:
-                    createOptions(printer, reader, (AnswerableQuestion<Option>) q);
-                    break;
-                case FILL_BLANKS:
-                    createBlanks(printer, reader, (AnswerableQuestion<Blank>) q);
-                default:
+            if (q instanceof SingleAnswer) {
+                createOptions(printer, reader, (SingleAnswer) q);
+            } else  if (q instanceof FillBlanks) {
+                createBlanks(printer, reader, (FillBlanks) q);
             }
         } catch (IllegalArgumentException alreadyUsedID) {
             printer.println("Error " + alreadyUsedID.getMessage());
@@ -203,14 +268,25 @@ public class TeacherMenu extends Menu {
 
     }
 
+    /**
+     * This is a sub-method used in the creation of a Single Answer type question.
+     * It creates Options to be added to the list of answers of the question.
+     *
+     * @param printer a printstream that is used for printing text to the user
+     * @param reader a scanner object that is used for reading user input
+     * @param answer the question that options are going to be added to
+     */
+
     private void createOptions(final PrintStream printer, final Scanner reader, final AnswerableQuestion<Option> answer) {
-        printer.println("Please enter how many answers you would like to have (1-10)");
-        int numberOfAnswers = 0;
+
+
         while (true) {
+            printer.println("Please enter how many answers you would like to have (1-10)");
             try {
-                String amount = reader.nextLine();
-                numberOfAnswers = Integer.parseInt(amount);
+                final String amount = reader.nextLine();
+                final int numberOfAnswers = Integer.parseInt(amount);
                 if (numberOfAnswers > 0 && numberOfAnswers < 11) {
+                    int numberOfCOrrectAnswers = 0;
                     for (int i = 0; i < numberOfAnswers; i++) {
                         printer.println("Please enter answer contents");
                         final String content = reader.nextLine();
@@ -220,16 +296,30 @@ public class TeacherMenu extends Menu {
                         c1a3.put("option", content);
                         c1a3.put("isCorrect", isCorrect);
                         answer.addAnswer(c1a3);
+                        if (isCorrect) {
+                            numberOfCOrrectAnswers++;
+                        }
                     }
-                    break;
+                    if (numberOfCOrrectAnswers == 1) {
+                        break;
+                    }
                 }
             } catch (Exception e) {
                 // invalid input
             }
-            printer.println("Error: please enter valid number");
+            printer.println("Error: please enter valid input, You must have one valid option");
 
         }
     }
+
+    /**
+     * This is a sub-method used in the creation of a Fill Blanks type question.
+     * It creates Blanks to be added to the list of answers of the question.
+     *
+     * @param printer a printstream that is used for printing text to the user
+     * @param reader a scanner object that is used for reading user input
+     * @param answer the question that blanks are going to be added to
+     */
 
     private void createBlanks(final PrintStream printer, final Scanner reader, final AnswerableQuestion<Blank> answer) {
         printer.println("Please enter how many blanks you would like to have (1-10)");
@@ -256,25 +346,10 @@ public class TeacherMenu extends Menu {
         }
     }
 
-    private void launchEditor(PrintStream printer, Scanner reader, Module module) {
-        QuestionBank qb;
-        while (true) {
-            printer.println("Please enter ID of question bank");
-            final String searchID = reader.nextLine();
-            final Optional<QuestionBank> optionalQB = module.getQuestionBank(searchID);
-            if (optionalQB.isEmpty()) {
-                printer.println("error, incorrect question bank ID selected");
-            } else {
-                qb = optionalQB.get();
-                printer.println("Selected question bank is " + qb.getUniqueID());
-                break;
-
-            }
-
-        }
-
-
-    }
+    /**
+     * this method prints the list of question currently loaded
+     *
+     */
 
     private void listQuestions(final PrintStream printer, final QuestionBank qb) {
         printer.println("The loaded questions are as follows:");
@@ -285,6 +360,10 @@ public class TeacherMenu extends Menu {
             printer.println(question.getQuestionID() + " [" + question.getType() + "]: " + question.getQuestionText());
         }
     }
+
+    /**
+     * this method ends the program
+     */
 
     private void endProgram(PrintStream printer) {
         printer.println("Thank you for using the question bank program");

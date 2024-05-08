@@ -9,12 +9,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+/**
+ * the student menu is the main way students interact with the program
+ */
+
 public class StudentMenu extends Menu {
 
 
     public StudentMenu(final List<Module> modules) {
         super(modules);
     }
+
+    /**
+     * prints the menu and interaction options a student user has
+     * @param printer a printstream that is used for printing text to the user
+     * @param reader a scanner object that is used for reading user input
+     */
 
     public void printMenu(PrintStream printer, Scanner reader) {
 
@@ -58,6 +68,7 @@ public class StudentMenu extends Menu {
                 case "24":
                     finishQuiz(printer, workQuiz, start);
                     workQuiz = null;
+                    questionIndex = 0;
                     break;
                 case "3":
                     endProgram(printer);
@@ -88,6 +99,12 @@ public class StudentMenu extends Menu {
 
     }
 
+    /**
+     * this method allows a use to answer a question
+     * @param workQuiz the current quiz being taken
+     * @param questionIndex the current question the student is on
+     */
+
     private void answerQuestion(final PrintStream printer, final Scanner reader, final Quiz workQuiz, final int questionIndex) {
         final AnswerableQuestion question = workQuiz.getQuestions().get(questionIndex);
         switch (question.getType()) {
@@ -106,18 +123,30 @@ public class StudentMenu extends Menu {
         }
     }
 
+    /**
+     * this method prints the current question
+     * @param workQuiz the current quiz being taken
+     * @param questionIndex the current question the student is on
+     */
+
     private void printCurrentQuestion(final PrintStream printer, final Quiz workQuiz, final int questionIndex) {
         final AnswerableQuestion question = workQuiz.getQuestions().get(questionIndex);
-        printer.println("Current question " + question.getQuestionID() + ": " + question.getQuestionText());
-        switch (question.getType()) {
-            case SINGLE_CHOICE:
-                final List<Option> options = (List<Option>) question.getAnswers();
-                for (int j = 0; j < options.size(); j++) {
-                    printer.println((j + 1) + ") " + options.get(j).getAnswer());
-                }
-                break;
+        printer.println("Current question " + question.getQuestionID() + " (" + (questionIndex +1) + " of " +
+                workQuiz.getQuestions().size() + ") : " + question.getQuestionText());
+
+        if (question instanceof SingleAnswer){
+            final List<Option> options = ((SingleAnswer) question).getAnswers();
+            for (int j = 0; j < options.size(); j++) {
+                printer.println((j + 1) + ") " + options.get(j).getAnswer());
+            }
         }
     }
+
+    /**
+     * this method ends the quiz and prints the student's score
+     * @param workQuiz the current quiz being taken
+     * @param start the starting time of the quiz
+     */
 
     private void finishQuiz(final PrintStream printer, final Quiz workQuiz, final Instant start) {
         final Instant finish = Instant.now();
@@ -130,6 +159,11 @@ public class StudentMenu extends Menu {
         printer.println("Total questions left unanswered: " + workQuiz.getUnansweredQuestionCount());
     }
 
+    /**
+     * this method prints the list of modules currently loaded
+     *
+     */
+
     private void listModules(final PrintStream printer) {
         printer.println("The loaded modules are as follows:");
         int i = 0;
@@ -139,6 +173,11 @@ public class StudentMenu extends Menu {
             printer.println(mod.getModID());
         }
     }
+
+    /**
+     * this method prints the list of question banks currently loaded
+     *
+     */
 
     private void listQuestionBanks(PrintStream printer, Module module) {
         printer.println("The loaded question banks are as follows:");
@@ -152,9 +191,14 @@ public class StudentMenu extends Menu {
 
     }
 
+    /**
+     * this method allows the user to select a module by its ID
+     * @return module to be viewed
+     */
+
     private Module selectModByID(final PrintStream printer, final Scanner reader) {
         while (true) {
-            printer.println("Please enter module from the list to edit or view");
+            printer.println("Please enter module from the list to view");
             final String choice = reader.nextLine();
             Optional<Module> optionalWorkMod = modules.stream().filter(mod -> mod.getModID().equals(choice)).findFirst();
             if (optionalWorkMod.isEmpty()) {
@@ -167,6 +211,11 @@ public class StudentMenu extends Menu {
         }
 
     }
+
+    /**
+     * this method allows the user to begin a quiz by inputting its Unique ID
+     * @return quiz to be used by student
+     */
 
     private Optional<Quiz> selectQuizByUniqueID(final PrintStream printer, final Scanner reader) {
 
@@ -193,9 +242,13 @@ public class StudentMenu extends Menu {
         String numberOfQuestions = reader.nextLine();
         try {
             final int quizLength = Integer.parseInt(numberOfQuestions);
-            final Quiz quiz = workBank.get().createQuiz(quizLength);
-            printer.println("Selected question bank is " + workBank.get().getUniqueID());
-            return Optional.of(quiz);
+            try {
+                final Quiz quiz = workBank.get().createQuiz(quizLength);
+                printer.println("Selected question bank is " + workBank.get().getUniqueID());
+                return Optional.of(quiz);
+            } catch (IllegalArgumentException negativeNumber){
+                printer.println("Error: " + negativeNumber.getMessage());
+            }
         } catch (NumberFormatException nfe) {
             printer.println("Error: Please provide numeric value for amount of questions");
         }
@@ -203,6 +256,10 @@ public class StudentMenu extends Menu {
         return Optional.empty();
 
     }
+
+    /**
+     * this method ends the program
+     */
 
     private void endProgram(PrintStream printer) {
         printer.println("Thank you for using the question bank program");

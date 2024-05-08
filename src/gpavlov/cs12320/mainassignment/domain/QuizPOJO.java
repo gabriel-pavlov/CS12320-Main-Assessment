@@ -5,6 +5,10 @@ import java.util.List;
 
 public class QuizPOJO implements Quiz {
 
+    /**
+     * {@inheritDoc}
+     */
+
     private final List<SelectedQuestion> quizQuestions = new ArrayList<>();
 
     public QuizPOJO(final List<AnswerableQuestion> selected) {

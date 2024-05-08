@@ -8,7 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * the wrapper object for question banks
+ */
+
 public class QuestionFileStorageWrapper<E> implements AnswerableQuestion<E> {
+
+    /**
+     * {@inheritDoc}
+     */
 
     private final AnswerableQuestion<E> wrapped;
 

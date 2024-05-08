@@ -1,7 +1,14 @@
 package gpavlov.cs12320.mainassignment.domain;
 
+/**
+ * This is the single answer type of selected question
+ */
+
 public class SelectedSingleQuestionPOJO extends SelectedQuestionPOJO<Option> {
 
+    /**
+     * {@inheritDoc}
+     */
 
     private int answerIndex = 0;
 

@@ -9,7 +9,15 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.*;
 
+/**
+ * this is the wrapper object used for saving and loading modules.
+ */
+
 public class ModuleFileStorageWrapper implements Module {
+
+    /**
+     * {@inheritDoc}
+     */
 
     private final Module wrapped;
 
@@ -18,10 +26,22 @@ public class ModuleFileStorageWrapper implements Module {
         this.load();
     }
 
+    /**
+     *
+     * @return the mod ID of wrapped module
+     */
+
     @Override
     public String getModID() {
         return wrapped.getModID();
     }
+
+    /**
+     * this implementation extracts source question bank list from the wrapped insatance and generates a new list
+     * where each element is wrapped by {@link QuestionBankFileStorageWrapper} so that save functions can be triggered
+     * when object is changed.
+     * @return wrapped question bank 
+     */
 
     @Override
     public List<QuestionBank> getQuestionBanks() {
@@ -58,6 +78,12 @@ public class ModuleFileStorageWrapper implements Module {
         return qb;
     }
 
+    /**
+     * this method adds a new wrapped question bank when the original module has a question bank added
+     * @param qWrapped the question bank to be wrapped
+     * @return the wrapped question bank
+     */
+
     private QuestionBankFileStorageWrapper wrapped(final QuestionBank qWrapped) {
         return new QuestionBankFileStorageWrapper(qWrapped, this);
     }
@@ -65,6 +91,10 @@ public class ModuleFileStorageWrapper implements Module {
     Module getWrapped() {
         return wrapped;
     }
+
+    /**
+     * this method is used to load object data from text files into the program.
+     */
 
     void load() {
         final Module data = getWrapped();
@@ -122,6 +152,10 @@ public class ModuleFileStorageWrapper implements Module {
         }
 
     }
+
+    /**
+     * this method is used to save object data to a txt file any time a change is made
+     */
 
     void save() {
         final Module data = getWrapped();

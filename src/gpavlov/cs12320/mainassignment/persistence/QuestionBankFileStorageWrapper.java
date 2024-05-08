@@ -10,7 +10,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * the wrapper object for question banks
+ */
+
 public class QuestionBankFileStorageWrapper implements QuestionBank {
+
+    /**
+     * {@inheritDoc}
+     */
 
     private final QuestionBank wrapped;
 

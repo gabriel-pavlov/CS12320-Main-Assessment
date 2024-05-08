@@ -1,2 +1,13 @@
 b1
 END
+B
+q2	What is past tense of do?	SINGLE_CHOICE	done	true	
+q3	How many quizzes in CS10720?	SINGLE_CHOICE	1	false	2	false	3N	false	4	false	5	false	6	false	7	false	8	false	9	false	10	true	
+q4	text	SINGLE_CHOICE	q	true	2	false	3	false	4	false	5	false	
+q5	fill __ the ______ questions are ____!	FILL_BLANKS	in	blanks	cool	
+q6	text ____	FILL_BLANKS	text	
+q7	Type numbers from 1 to 10 in ascending order	FILL_BLANKS	1	2	3	4	5	6	7	8	9	10	
+q8	_ _ _ _ _	FILL_BLANKS	1	2	3	4	5	
+END
+1
+END
